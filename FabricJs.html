@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script src="fabric.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+    crossorigin="anonymous"></script>
+
+<body>
+    <canvas id="c" height="1000px" width="1000px" style="margin-left: 100px;"></canvas>
+    <input type="button" id="b" value="Right">
+    <button @click="resetCanvas">
+        Reset
+    </button>
+    <button @click="saveImage">
+        Save
+    </button>
+    <script>
+        var canvas = this.__canvas = new fabric.Canvas('c', {
+            selection: false
+        });
+        fabric.Object.prototype.originX = fabric.Object.prototype.originY = 'center';
+
+        function makeCircle(left, top, line1, line2, line3, line4) {
+            // var c = new fabric.Circle({
+            //     left: left,
+            //     top: top,
+            //     strokeWidth: 5,
+            //     radius: 12,
+            //     fill: '#fff',
+            //     stroke: '#666'
+            // });
+            // var text = new fabric.Text('hello\nworld\ndjádjaoj\n\nworld\ndjádjaoj\nworld\ndjádjaoj', {
+            //     fontSize: 30,
+            //     left: left,
+            //     top: top
+            // });
+            var c = new fabric.Rect({
+                left: left,
+                top: 0,
+                fill: 'white',
+                width: 100,
+                height: 200,
+                originX: 'center',
+                originY: 'top'
+            });
+
+            var d = new fabric.Rect({
+                left: left,
+
+                fill: '#fff',
+                // width: text.width,
+                width: 100,
+                height: 50,
+                originX: 'center',
+                originY: 'top'
+            });
+
+            c.hasControls = c.hasBorders = false;
+            c.set({
+
+                strokeWidth: 5,
+                stroke: 'rgba(100,200,200,1)'
+            });
+
+            d.set({
+
+                strokeWidth: 5,
+                stroke: 'rgba(100,200,200,1)'
+            });
+
+            // var textTop = new fabric.Text('user_tbl', {
+            //     fontSize: 30,
+            //     left: left,
+            //     top: top,
+            //     originX: "center",
+            //     originY: "bottom"
+            // });
+
+            var group = new fabric.Group([c, d], {
+                left: left,
+                top: top,
+            });
+            group.line1 = line1;
+            group.line2 = line2;
+            group.line3 = line3;
+            group.line4 = line4;
+
+            return group;
+        }
+
+        function makeLine(coords) {
+            return new fabric.Line(coords, {
+                fill: 'red',
+                stroke: 'red',
+                strokeWidth: 5,
+                selectable: false,
+                evented: false,
+            });
+        }
+
+        var line = makeLine([250, 15, 250, 175]),
+            line2 = makeLine([250, 175, 250, 250]),
+            line3 = makeLine([250, 250, 400, 350]),
+            line4 = makeLine([250, 250, 100, 350]),
+            line5 = makeLine([250, 175, 100, 225]),
+            line6 = makeLine([250, 175, 400, 225]);
+
+        canvas.add(line, line2, line3, line4, line5, line6);
+
+        canvas.add(
+            makeCircle(line.get('x1'), line.get('y1'), null, line),
+            makeCircle(line.get('x2'), line.get('y2'), line, line2, line5, line6),
+            makeCircle(line2.get('x2'), line2.get('y2'), line2, line3, line4),
+            makeCircle(line3.get('x2'), line3.get('y2'), line3),
+            makeCircle(line4.get('x2'), line4.get('y2'), line4),
+            makeCircle(line5.get('x2'), line5.get('y2'), line5),
+            makeCircle(line6.get('x2'), line6.get('y2'), line6)
+        );
+
+        canvas.on('object:moving', function (e) {
+            var p = e.target;
+            p.line1 && p.line1.set({
+                'x2': p.left,
+                'y2': p.top
+            });
+            p.line2 && p.line2.set({
+                'x1': p.left,
+                'y1': p.top
+            });
+            p.line3 && p.line3.set({
+                'x1': p.left,
+                'y1': p.top
+            });
+            p.line4 && p.line4.set({
+                'x1': p.left,
+                'y1': p.top
+            });
+            canvas.renderAll();
+        });
+    </script>
+</body>
+
+</html>
